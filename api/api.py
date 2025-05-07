@@ -32,6 +32,7 @@ def get_all_recipes():
             'id': recipe.id,
             'title': recipe.title,
             'ingredients': recipe.ingredients,
+            'instructions': recipe.instructions,
             'description': recipe.description,
             'image_url': recipe.image_url,
             'servings': recipe.servings

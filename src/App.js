@@ -3,9 +3,11 @@ import { useState, useEffect } from "react";
 import Header from "./components/Header";
 import "./App.css";
 import RecipeExcerpt from "./components/RecipeExcerpt";
+import RecipeFull from "./components/RecipeFull";
 
 function App() {
   const [recipes, setRecipes] = useState([]);
+  const [selectedRecipe, setSelectedRecipe] = useState(null);
 
   useEffect(() => {
     fetchAllRecipes();
@@ -25,12 +27,25 @@ function App() {
     }
   }
 
+  const handleSelectRecipe = (recpie) => {
+    setSelectedRecipe(recpie);
+  }
+
+  const handleUnselectRecipe = () => {
+    setSelectedRecipe(null);
+  }
+
   return (
     <div className='recipe-app'>
       <Header />
-      <div className="recipe-list">
-        {recipes.map(recipe => <RecipeExcerpt key={recipe.id} recipe={recipe} />)}
-      </div>
+      {selectedRecipe ?
+        (<RecipeFull selectedRecipe={selectedRecipe} handleUnselectRecipe={handleUnselectRecipe} />)
+        :
+        (
+          <div className="recipe-list">
+            {recipes.map(recipe => <RecipeExcerpt key={recipe.id} recipe={recipe} handleSelectRecipe={handleSelectRecipe} />)}
+          </div>
+        )}
     </div>
   );
 }
