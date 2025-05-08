@@ -6,6 +6,10 @@ import RecipeExcerpt from "./components/RecipeExcerpt";
 import RecipeFull from "./components/RecipeFull";
 import NewRecipeForm from "./components/NewRecipeForm";
 
+import { displayToast } from "./helpers/toastHelper";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"
+
 function App() {
   const [recipes, setRecipes] = useState([]);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
@@ -90,12 +94,12 @@ function App() {
           description: "",
           image_url: "https://images.pexels.com/photos/9986228/pexels-photo-9986228.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
         });
-        console.log("Added new recipe successfully");
+        displayToast("Added new recipe successfully", "success");
       } else {
-        console.log("There was an error adding the recipe");
+        displayToast("There was an error adding the recipe", "error");
       }
     } catch (error) {
-      console.log("Error saving new recipe: ", error);
+      displayToast(`Error saving new recipe: ${error}`, "error");
     }
   }
 
@@ -120,12 +124,12 @@ function App() {
             return recipe;
           }
         }));
-        console.log("Successfully updated recipe");
+        displayToast("Successfully updated recipe", "success");
       } else {
-        console.log("There was an error updating the recipe");
+        displayToast("There was an error updating the recipe", "error");
       }
     } catch (error) {
-      console.log("Error saving recipe changes: ", error);
+      displayToast(`Error saving recipe changes: ${error}`, "error");
     }
     setSelectedRecipe(null);
   }
@@ -138,12 +142,12 @@ function App() {
       if (response.ok) {
         setRecipes(recipes.filter(recipe => recipe.id != recipeId));
         setSelectedRecipe(null);
-        console.log("Recipe deleted successfully");
+        displayToast("Recipe deleted successfully", "success");
       } else {
-        console.log("There was an error deleting the recipe");
+        displayToast("There was an error deleting the recipe", "error");
       }
     } catch (error) {
-      console.log("Error deleting recipe: ", error);
+      displayToast(`Error deleting recipe: ${error}`, "error");
     }
   }
 
@@ -159,11 +163,16 @@ function App() {
     return searchResults;
   }
 
+  const displayAllRecipes = () => {
+    setSearchTerm("");
+    setSelectedRecipe(null);
+    setShowNewRecipeForm(false);
+  }
   const displayedRecipes = searchTerm ? handleSearch() : recipes;
 
   return (
     <div className='recipe-app'>
-      <Header showRecipeForm={showRecipeForm} searchTerm={searchTerm} updateSearchTerm={updateSearchTerm} />
+      <Header showRecipeForm={showRecipeForm} searchTerm={searchTerm} updateSearchTerm={updateSearchTerm} displayAllRecipes={displayAllRecipes} />
       {showNewRecipeForm && <NewRecipeForm newRecipe={newRecipe} hideRecipeForm={hideRecipeForm} onUpdateForm={onUpdateForm} handleNewRecipe={handleNewRecipe} />}
       {selectedRecipe && <RecipeFull selectedRecipe={selectedRecipe} handleUnselectRecipe={handleUnselectRecipe} onUpdateForm={onUpdateForm} handleUpdateRecipe={handleUpdateRecipe} handleDeleteRecipe={handleDeleteRecipe} />}
       {!selectedRecipe && !showNewRecipeForm &&
@@ -171,6 +180,7 @@ function App() {
           {displayedRecipes.map(recipe => <RecipeExcerpt key={recipe.id} recipe={recipe} handleSelectRecipe={handleSelectRecipe} />)}
         </div>
       }
+      <ToastContainer />
     </div>
   );
 }
