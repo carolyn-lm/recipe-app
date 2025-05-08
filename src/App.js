@@ -89,6 +89,7 @@ function App() {
           description: "",
           image_url: "https://images.pexels.com/photos/9986228/pexels-photo-9986228.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
         });
+        console.log("Added new recipe successfully");
       } else {
         console.log("There was an error adding the recipe");
       }
@@ -128,11 +129,28 @@ function App() {
     setSelectedRecipe(null);
   }
 
+  const handleDeleteRecipe = async (recipeId) => {
+    try {
+      const response = await fetch(`/api/recipes/${recipeId}`, {
+        method: "DELETE"
+      });
+      if (response.ok) {
+        setRecipes(recipes.filter(recipe => recipe.id != recipeId));
+        setSelectedRecipe(null);
+        console.log("Recipe deleted successfully");
+      } else {
+        console.log("There was an error deleting the recipe");
+      }
+    } catch (error) {
+      console.log("Error deleting recipe: ", error);
+    }
+  }
+
   return (
     <div className='recipe-app'>
       <Header showRecipeForm={showRecipeForm} />
       {showNewRecipeForm && <NewRecipeForm newRecipe={newRecipe} hideRecipeForm={hideRecipeForm} onUpdateForm={onUpdateForm} handleNewRecipe={handleNewRecipe} />}
-      {selectedRecipe && <RecipeFull selectedRecipe={selectedRecipe} handleUnselectRecipe={handleUnselectRecipe} onUpdateForm={onUpdateForm} handleUpdateRecipe={handleUpdateRecipe} />}
+      {selectedRecipe && <RecipeFull selectedRecipe={selectedRecipe} handleUnselectRecipe={handleUnselectRecipe} onUpdateForm={onUpdateForm} handleUpdateRecipe={handleUpdateRecipe} handleDeleteRecipe={handleDeleteRecipe} />}
       {!selectedRecipe && !showNewRecipeForm &&
         <div className="recipe-list">
           {recipes.map(recipe => <RecipeExcerpt key={recipe.id} recipe={recipe} handleSelectRecipe={handleSelectRecipe} />)}
