@@ -54,9 +54,14 @@ function App() {
     setShowNewRecipeForm(false);
   }
 
-  const onUpdateForm = (e) => {
+  const onUpdateForm = (e, action = "new") => {
     const { name, value } = e.target;
-    setNewRecipe({ ...newRecipe, [name]: value });
+    if (action === "new") {
+      setNewRecipe({ ...newRecipe, [name]: value });
+    } else {
+      setSelectedRecipe({ ...selectedRecipe, [name]: value });
+    }
+
   }
 
   const handleNewRecipe = async (e, newRecipe) => {
@@ -92,11 +97,42 @@ function App() {
     }
   }
 
+  const handleUpdateRecipe = async (e, selectedRecipe) => {
+    e.preventDefault();
+    const { id } = selectedRecipe;
+    try {
+      const response = await fetch(`/api/recipes/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(selectedRecipe)
+      });
+      if (response.ok) {
+        const data = await response.json();
+        //update recipes, overwrite updated one, all others remain the same
+        setRecipes(recipes.map(recipe => {
+          if (recipe.id === id) {
+            return data.recipe;
+          } else {
+            return recipe;
+          }
+        }));
+        console.log("Successfully updated recipe");
+      } else {
+        console.log("There was an error updating the recipe");
+      }
+    } catch (error) {
+      console.log("Error saving recipe changes: ", error);
+    }
+    setSelectedRecipe(null);
+  }
+
   return (
     <div className='recipe-app'>
       <Header showRecipeForm={showRecipeForm} />
       {showNewRecipeForm && <NewRecipeForm newRecipe={newRecipe} hideRecipeForm={hideRecipeForm} onUpdateForm={onUpdateForm} handleNewRecipe={handleNewRecipe} />}
-      {selectedRecipe && <RecipeFull selectedRecipe={selectedRecipe} handleUnselectRecipe={handleUnselectRecipe} />}
+      {selectedRecipe && <RecipeFull selectedRecipe={selectedRecipe} handleUnselectRecipe={handleUnselectRecipe} onUpdateForm={onUpdateForm} handleUpdateRecipe={handleUpdateRecipe} />}
       {!selectedRecipe && !showNewRecipeForm &&
         <div className="recipe-list">
           {recipes.map(recipe => <RecipeExcerpt key={recipe.id} recipe={recipe} handleSelectRecipe={handleSelectRecipe} />)}
