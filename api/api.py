@@ -1,8 +1,11 @@
 import time
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 
-app = Flask(__name__)
+app = Flask(__name__, 
+            static_url_path='',
+            static_folder='../public',
+            template_folder='../public')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///recipes.db'
 db = SQLAlchemy(app)
@@ -21,6 +24,10 @@ class Recipe(db.Model):
 # with app.app_context():
 #     db.create_all()
 #     db.session.commit()
+
+@app.route('/')
+def main_page():
+    return render_template("index.html")
 
 #Route to fetch all recipes
 @app.route('/api/recipes', methods=['GET'])
