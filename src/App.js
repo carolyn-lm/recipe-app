@@ -140,7 +140,7 @@ function App() {
         method: "DELETE"
       });
       if (response.ok) {
-        setRecipes(recipes.filter(recipe => recipe.id != recipeId));
+        setRecipes(recipes.filter(recipe => recipe.id !== recipeId));
         setSelectedRecipe(null);
         displayToast("Recipe deleted successfully", "success");
       } else {
