@@ -76,6 +76,7 @@ figure {
 
 /* Remove animations, transitions, and smooth scroll for reduced motion */
 @media (prefers-reduced-motion: reduce) {
+
   html:focus-within,
   *,
   *::before,
@@ -118,6 +119,7 @@ header svg {
 header .logo-search svg:hover {
   transform: rotate(25deg);
 }
+
 header h1 {
   font-size: 2.5rem;
   font-family: var(--headings-font-family);
@@ -224,6 +226,11 @@ header .new-recipe:hover {
   font-size: 1.125rem;
 }
 
+.this-week-star {
+  text-align: right;
+  margin-bottom: 0;
+}
+
 /* Recipe Details */
 
 .recipe-details {
@@ -283,6 +290,7 @@ header .new-recipe:hover {
   background-color: var(--accent-color);
   color: var(--accent-color-text);
 }
+
 .recipe-details .button-container svg {
   margin-right: 5px;
 }
@@ -317,11 +325,22 @@ header .new-recipe:hover {
   content: " - ";
   padding-right: 0.75rem;
 }
+
 .recipe-details .formatted-text {
   max-width: 100%;
   margin-top: 10px;
   white-space: pre-line;
   font-family: inherit;
+}
+
+/* .this-week {
+  margin-left: 20px;
+} */
+
+#controls {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
 }
 
 /* Recipe Form */
@@ -427,6 +446,7 @@ header .new-recipe:hover {
   header .logo-search {
     padding-bottom: 1rem;
   }
+
   header button {
     margin-bottom: 0;
   }
@@ -440,6 +460,7 @@ header .new-recipe:hover {
   .recipe-list {
     gap: 3rem;
   }
+
   .recipe-card {
     flex: 0 0 calc(33.33% - 2rem);
   }

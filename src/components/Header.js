@@ -2,11 +2,12 @@ import React from "react";
 import { Search } from "react-feather";
 import { ReactComponent as Logo } from "../images/utensils.svg";
 
-const Header = ({ showRecipeForm, searchTerm, updateSearchTerm, displayAllRecipes }) => {
+const Header = ({ showRecipeForm, searchTerm, updateSearchTerm, displayAllRecipes, toggleFilters }) => {
   return (
     <header>
       <div className='logo-search'>
         <Logo onClick={displayAllRecipes} />
+
         <div className='search'>
           <label className='visually-hidden' htmlFor='search'>
             Search
@@ -17,6 +18,7 @@ const Header = ({ showRecipeForm, searchTerm, updateSearchTerm, displayAllRecipe
       </div>
       <h1>My Favorite Recipes</h1>
       <button className="new-recipe" onClick={showRecipeForm}>Add New Recipe</button>
+      <button className="new-recipe" onClick={toggleFilters}><i className="fa-solid fa-filter"></i> Filter</button>
     </header>
   );
 };

@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { X } from "react-feather";
 import EditRecipeForm from "./EditRecipeForm";
 import ConfirmationModal from "./ConfirmationModal";
+import Star from "./Star";
 
-const RecipeFull = ({ selectedRecipe, handleUnselectRecipe, onUpdateForm, handleUpdateRecipe, handleDeleteRecipe }) => {
+const RecipeFull = ({ selectedRecipe, handleUnselectRecipe, onUpdateForm, handleUpdateRecipe, handleDeleteRecipe, handleStar }) => {
     const [editing, setEditing] = useState(false);
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
@@ -29,15 +30,20 @@ const RecipeFull = ({ selectedRecipe, handleUnselectRecipe, onUpdateForm, handle
                             <img src={selectedRecipe.image_url} alt={selectedRecipe.title} />
                         </figure>
                         <h2>{selectedRecipe.title}</h2>
-                        <div className='button-container'>
-                            <button className='edit-button' onClick={() => setEditing(true)}>Edit</button>
-                            <button className='cancel-button' onClick={handleUnselectRecipe}><X />Close</button>
-                            <button className='delete-button' onClick={() => setShowConfirmationModal(true)}>Delete</button>
+                        <div id="controls">
+                            <div className='button-container'>
+                                <button className='edit-button' onClick={() => setEditing(true)}>Edit</button>
+                                <button className='cancel-button' onClick={handleUnselectRecipe}><X />Close</button>
+                                <button className='delete-button' onClick={() => setShowConfirmationModal(true)}>Delete</button>
+                            </div>
+                            <Star recipe={selectedRecipe} handleStar={handleStar} fromAllRecipes={false} />
                         </div>
                     </header>
 
                     <h3>Description:</h3>
                     <p>{selectedRecipe.description}</p>
+
+                    <p><strong>Meal: </strong>{selectedRecipe.meal} <strong>Category: </strong> {selectedRecipe.category} </p>
 
                     <h3>Ingredients:</h3>
 

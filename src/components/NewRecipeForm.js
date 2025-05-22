@@ -1,4 +1,5 @@
 import React from "react";
+import MealSelect from "./MealSelect";
 
 const NewRecipeForm = ({ newRecipe, hideRecipeForm, onUpdateForm, handleNewRecipe }) => {
     return (
@@ -10,6 +11,12 @@ const NewRecipeForm = ({ newRecipe, hideRecipeForm, onUpdateForm, handleNewRecip
                 <form onSubmit={(e) => handleNewRecipe(e, newRecipe)}>
                     <label>Title</label>
                     <input type='text' name='title' value={newRecipe.title} onChange={(e) => onUpdateForm(e)} required />
+
+                    <label>Meal</label>
+                    <MealSelect meal={newRecipe.meal} onUpdateForm={onUpdateForm} action="new" />
+
+                    <label>Category</label>
+                    <input type='text' name='category' value={newRecipe.category} onChange={(e) => onUpdateForm(e)} />
 
                     <label>Ingredients</label>
                     <textarea

@@ -10,6 +10,9 @@ db = SQLAlchemy(app)
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
+    meal = db.Column(db.String(25), nullable=False)
+    category = db.Column(db.String(25), nullable=True)
+    starred = db.Column(db.Boolean, nullable=False)
     ingredients = db.Column(db.String(500), nullable=False)
     instructions = db.Column(db.Text, nullable=False)
     description = db.Column(db.Text, nullable=True, default='Delicious. You need to try it!')
@@ -18,9 +21,9 @@ class Recipe(db.Model):
     def __repr__(self):
         return f"Recipe(id={self.id}, title='{self.title}', description='{self.description}', servings={self.servings})"
     
-# with app.app_context():
-#     db.create_all()
-#     db.session.commit()
+with app.app_context():
+    db.create_all()
+    db.session.commit()
 
 @app.route('/')
 def index():
@@ -35,6 +38,9 @@ def get_all_recipes():
         recipe_list.append({
             'id': recipe.id,
             'title': recipe.title,
+            'meal': recipe.meal,
+            'category': recipe.category,
+            'starred': recipe.starred,
             'ingredients': recipe.ingredients,
             'instructions': recipe.instructions,
             'description': recipe.description,
@@ -55,6 +61,9 @@ def add_recipe():
     #create new recipe from data
     new_recipe = Recipe(
         title=data['title'],
+        meal=data['meal'],
+        category=data['category'],
+        starred=data['starred'],
         ingredients=data['ingredients'],
         instructions=data['instructions'],
         servings=data['servings'],
@@ -68,6 +77,9 @@ def add_recipe():
     new_recipe_data = {
         'id': new_recipe.id,
         'title': new_recipe.title,
+        'meal': new_recipe.meal,
+        'category': new_recipe.category,
+        'starred': new_recipe.starred,
         'ingredients': new_recipe.ingredients,
         'instructions': new_recipe.instructions,
         'servings': new_recipe.servings,
@@ -83,26 +95,32 @@ def update_recipe(recipe_id):
     recipe = Recipe.query.get(recipe_id)
     if not recipe:
         return jsonify({'error': 'Recipe not found'}), 404
-    
+    print("got recipe");
     #get updated data
     data = request.get_json()
    # Validate the incoming JSON data for required fields
-    required_fields = ['title', 'ingredients', 'instructions', 'servings', 'description', 'image_url']
+    required_fields = ['title', 'meal', 'ingredients', 'instructions', 'servings', 'description', 'image_url']
     for field in required_fields:
         if field not in data or data[field] == "":
             return jsonify({'error': f"Missing required field: '{field}'"}), 400
     recipe.title = data['title']
+    recipe.meal = data['meal']
+    recipe.category = data['category']
+    recipe.starred = data['starred']
     recipe.ingredients = data['ingredients']
     recipe.instructions = data['instructions']
     recipe.servings = data['servings']
     recipe.description = data['description']
     recipe.image_url = data['image_url']
     db.session.commit()
- 
+    print("did commit");
     # Serialize the updated recipe and return it as JSON
     updated_recipe = {
         'id': recipe.id,
         'title': recipe.title,
+        'meal': recipe.meal,
+        'category': recipe.category,
+        'starred': recipe.starred,
         'ingredients': recipe.ingredients,
         'instructions': recipe.instructions,
         'servings': recipe.servings,

@@ -5,6 +5,7 @@ import "./App.css";
 import RecipeExcerpt from "./components/RecipeExcerpt";
 import RecipeFull from "./components/RecipeFull";
 import NewRecipeForm from "./components/NewRecipeForm";
+import FilterOptions from "./FilterOptions";
 
 import { displayToast } from "./helpers/toastHelper";
 import { ToastContainer } from "react-toastify";
@@ -15,6 +16,9 @@ function App() {
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [newRecipe, setNewRecipe] = useState({
     title: "",
+    meal: "Dinner",
+    category: "",
+    starred: false,
     ingredients: "",
     instructions: "",
     servings: 1, // conservative default
@@ -23,7 +27,11 @@ function App() {
   });
   const [showNewRecipeForm, setShowNewRecipeForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+  const [filterType, setFilterType] = useState("");
+  const [filterValue, setFilterValue] = useState("Dinner");
 
+  // Load all recipes when app first loads
   useEffect(() => {
     fetchAllRecipes();
   }, []);
@@ -42,23 +50,37 @@ function App() {
     }
   }
 
+  // Used when click on View button of RecipeExcerpt in All Recipes View
   const handleSelectRecipe = (recpie) => {
     setSelectedRecipe(recpie);
   }
 
+  // Used when click on Close button in Full Recipe View
   const handleUnselectRecipe = () => {
     setSelectedRecipe(null);
   }
 
+  // Used when click on Add New Recipe button
   const showRecipeForm = () => {
     setShowNewRecipeForm(true);
     setSelectedRecipe(null);
   }
 
+  // Used when click on Cancel from New Recipe Form
   const hideRecipeForm = () => {
     setShowNewRecipeForm(false);
   }
 
+  // Used when clicked on star icon from either All Recipe view or from Full Recipe view
+  const handleStar = (e, recipe, fromAllRecipes = false) => {
+    const updatedRecipe = { ...recipe, "starred": !recipe.starred };
+    if (!fromAllRecipes) {
+      setSelectedRecipe(updatedRecipe);
+    }
+    handleUpdateRecipe(e, updatedRecipe, true);
+  }
+
+  // Field changed on New Recipe or Edit Recipe forms
   const onUpdateForm = (e, action = "new") => {
     const { name, value } = e.target;
     if (action === "new") {
@@ -69,8 +91,10 @@ function App() {
 
   }
 
+  // Call API to create new recipe (when click Save on New Recipe Form)
   const handleNewRecipe = async (e, newRecipe) => {
     e.preventDefault();
+
     try {
       const response = await fetch("/api/recipes", {
         method: "POST",
@@ -88,6 +112,9 @@ function App() {
         //reset default recipe state
         setNewRecipe({
           title: "",
+          meal: "",
+          category: "",
+          starred: false,
           ingredients: "",
           instructions: "",
           servings: 1,
@@ -103,8 +130,10 @@ function App() {
     }
   }
 
-  const handleUpdateRecipe = async (e, selectedRecipe) => {
+  // Call API to update selected recipe (Save on Edit Recipe Form)
+  const handleUpdateRecipe = async (e, selectedRecipe, starredOnly = false) => {
     e.preventDefault();
+    console.log("updating recipe", selectedRecipe);
     const { id } = selectedRecipe;
     try {
       const response = await fetch(`/api/recipes/${id}`, {
@@ -124,16 +153,22 @@ function App() {
             return recipe;
           }
         }));
-        displayToast("Successfully updated recipe", "success");
+        if (!starredOnly) {
+          displayToast("Successfully updated recipe", "success");
+        }
       } else {
         displayToast("There was an error updating the recipe", "error");
       }
     } catch (error) {
       displayToast(`Error saving recipe changes: ${error}`, "error");
     }
-    setSelectedRecipe(null);
+    if (!starredOnly) {
+      setSelectedRecipe(null);
+    }
+
   }
 
+  // Call API to delete a recipe (Delete button Full Recipe Form)
   const handleDeleteRecipe = async (recipeId) => {
     try {
       const response = await fetch(`/api/recipes/${recipeId}`, {
@@ -151,10 +186,12 @@ function App() {
     }
   }
 
+  // Update search term (user types in search field)
   const updateSearchTerm = (newSearchText) => {
     setSearchTerm(newSearchText);
   }
 
+  // filter recipes based on search term
   const handleSearch = () => {
     const searchResults = recipes.filter((recipe) => {
       const valuesToSearch = [recipe.title, recipe.ingredients, recipe.description];
@@ -163,21 +200,56 @@ function App() {
     return searchResults;
   }
 
+  // Show/Hide Filter options (when click on Filter button)
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
+  }
+
+  // Change selection of filter radio buttons
+  const updateFilter = (type, isOn) => {
+    setFilterType(isOn ? type : "");
+  }
+
+  // Select option for filter of meal
+  const updateFilterValue = (newValue) => {
+    console.log("filter by ", newValue);
+    setFilterValue(newValue);
+  }
+
+  // Return filtered recipes based on type
+  const filteredRecipes = () => {
+
+    if (filterType === "starred") {
+      return recipes.filter((recipe) => recipe.starred);
+    } else {
+      // by meal type
+      return recipes.filter((recipe) => recipe.meal === filterValue);
+    }
+
+  }
+
+  // Reset defaults and display all recipes (when click on logo)
   const displayAllRecipes = () => {
     setSearchTerm("");
+    setFilterType(false);
+    setShowFilters(false);
+    setFilterValue("Dinner");
     setSelectedRecipe(null);
     setShowNewRecipeForm(false);
   }
-  const displayedRecipes = searchTerm ? handleSearch() : recipes;
+
+  // Recipes to display - check for search term or a filter option, otherwise use all recipes
+  const displayedRecipes = searchTerm ? handleSearch() : filterType ? filteredRecipes() : recipes;
 
   return (
     <div className='recipe-app'>
-      <Header showRecipeForm={showRecipeForm} searchTerm={searchTerm} updateSearchTerm={updateSearchTerm} displayAllRecipes={displayAllRecipes} />
+      <Header showRecipeForm={showRecipeForm} searchTerm={searchTerm} updateSearchTerm={updateSearchTerm} displayAllRecipes={displayAllRecipes} toggleFilters={toggleFilters} />
+      {showFilters && <FilterOptions filterType={filterType} updateFilter={updateFilter} updateFilterValue={updateFilterValue} />}
       {showNewRecipeForm && <NewRecipeForm newRecipe={newRecipe} hideRecipeForm={hideRecipeForm} onUpdateForm={onUpdateForm} handleNewRecipe={handleNewRecipe} />}
-      {selectedRecipe && <RecipeFull selectedRecipe={selectedRecipe} handleUnselectRecipe={handleUnselectRecipe} onUpdateForm={onUpdateForm} handleUpdateRecipe={handleUpdateRecipe} handleDeleteRecipe={handleDeleteRecipe} />}
+      {selectedRecipe && <RecipeFull selectedRecipe={selectedRecipe} handleUnselectRecipe={handleUnselectRecipe} onUpdateForm={onUpdateForm} handleUpdateRecipe={handleUpdateRecipe} handleDeleteRecipe={handleDeleteRecipe} handleStar={handleStar} />}
       {!selectedRecipe && !showNewRecipeForm &&
         <div className="recipe-list">
-          {displayedRecipes.map(recipe => <RecipeExcerpt key={recipe.id} recipe={recipe} handleSelectRecipe={handleSelectRecipe} />)}
+          {displayedRecipes.map(recipe => <RecipeExcerpt key={recipe.id} recipe={recipe} handleSelectRecipe={handleSelectRecipe} handleStar={handleStar} />)}
         </div>
       }
       <ToastContainer />
