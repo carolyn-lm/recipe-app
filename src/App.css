@@ -206,6 +206,12 @@ header .new-recipe:hover {
   margin-bottom: 10px;
 }
 
+header .button-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
 .recipe-card button {
   font-weight: bold;
   background-color: var(--secondary-color);
@@ -229,6 +235,16 @@ header .new-recipe:hover {
 .this-week-star {
   text-align: right;
   margin-bottom: 0;
+}
+
+.filter-options {
+  display: flex;
+  gap: 25px;
+  justify-content: center;
+}
+
+.filter-options select {
+  margin-left: 5px;
 }
 
 /* Recipe Details */

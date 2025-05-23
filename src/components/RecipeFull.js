@@ -4,7 +4,7 @@ import EditRecipeForm from "./EditRecipeForm";
 import ConfirmationModal from "./ConfirmationModal";
 import Star from "./Star";
 
-const RecipeFull = ({ selectedRecipe, handleUnselectRecipe, onUpdateForm, handleUpdateRecipe, handleDeleteRecipe, handleStar }) => {
+const RecipeFull = ({ selectedRecipe, handleUnselectRecipe, onUpdateForm, handleUpdateRecipe, handleDeleteRecipe, handleStar, categoryList }) => {
     const [editing, setEditing] = useState(false);
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
@@ -22,7 +22,7 @@ const RecipeFull = ({ selectedRecipe, handleUnselectRecipe, onUpdateForm, handle
     return (
         <div className='recipe-details'>
             {editing ? (
-                <EditRecipeForm selectedRecipe={selectedRecipe} handleCancel={handleCancel} onUpdateForm={onUpdateForm} handleUpdateRecipe={handleUpdateRecipe} />
+                <EditRecipeForm selectedRecipe={selectedRecipe} handleCancel={handleCancel} onUpdateForm={onUpdateForm} handleUpdateRecipe={handleUpdateRecipe} categoryList={categoryList} />
             ) : (
                 <article>
                     <header>

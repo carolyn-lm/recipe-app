@@ -1,7 +1,8 @@
 import React from "react";
 import MealSelect from "./MealSelect";
+import CategoryCombobox from "./CategoryCombobox";
 
-const EditRecipeForm = ({ selectedRecipe, handleCancel, onUpdateForm, handleUpdateRecipe }) => {
+const EditRecipeForm = ({ selectedRecipe, handleCancel, onUpdateForm, handleUpdateRecipe, categoryList }) => {
     return (
         <div className='recipe-form'>
             <h2>Edit "{selectedRecipe.title}"</h2>
@@ -12,7 +13,7 @@ const EditRecipeForm = ({ selectedRecipe, handleCancel, onUpdateForm, handleUpda
                 <label>Meal</label>
                 <MealSelect currentSelection={selectedRecipe.meal} onUpdateForm={onUpdateForm} action="update" />
                 <label>Category</label>
-                <input type='text' name='category' value={selectedRecipe.category} onChange={(e) => onUpdateForm(e, "update")} required />
+                <CategoryCombobox category={selectedRecipe.category} categoryList={categoryList} onUpdateForm={onUpdateForm} />
                 <label>Ingredients</label>
                 <textarea name='ingredients' value={selectedRecipe.ingredients} onChange={(e) => onUpdateForm(e, "update")} required />
                 <label>Instructions</label>

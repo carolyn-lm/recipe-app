@@ -3,13 +3,13 @@ export default function MealSelect({ currentSelection, onUpdateForm, action, upd
 
     const handleChange = (e) => {
         if (action === "filter") {
-            updateFilterValue(e.target.value);
+            updateFilterValue(e);
         } else {
             onUpdateForm(e, action);
         }
     }
     return (
-        <select name="meal" defaultValue={currentSelection ? currentSelection : "Dinner"} onChange={(e) => handleChange(e)}>
+        <select id="meal-select" name="meal" defaultValue={currentSelection ? currentSelection : "Dinner"} onChange={(e) => handleChange(e)}>
             {options.map((meal) =>
                 <option key={meal} value={meal}>{meal}</option>
             )}

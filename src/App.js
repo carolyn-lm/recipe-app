@@ -50,6 +50,17 @@ function App() {
     }
   }
 
+  //returns list of previously used categories
+  const categoryList = () => {
+    const catList = [];
+    for (let recipe of recipes) {
+      if (recipe.category && !catList.includes(recipe.category)) {
+        catList.push(recipe.category);
+      }
+    }
+
+    return catList;
+  }
   // Used when click on View button of RecipeExcerpt in All Recipes View
   const handleSelectRecipe = (recpie) => {
     setSelectedRecipe(recpie);
@@ -212,19 +223,26 @@ function App() {
 
   // Select option for filter of meal
   const updateFilterValue = (newValue) => {
-    console.log("filter by ", newValue);
     setFilterValue(newValue);
   }
 
   // Return filtered recipes based on type
   const filteredRecipes = () => {
 
-    if (filterType === "starred") {
-      return recipes.filter((recipe) => recipe.starred);
-    } else {
-      // by meal type
-      return recipes.filter((recipe) => recipe.meal === filterValue);
+    switch (filterType) {
+      case "starred":
+        return recipes.filter((recipe) => recipe.starred);
+
+      case "meal":
+        return recipes.filter((recipe) => recipe.meal === filterValue);
+
+      case "category":
+        return recipes.filter((recipe) => recipe.category === filterValue);
+
+      default:
+        return recipes;
     }
+
 
   }
 
@@ -244,9 +262,9 @@ function App() {
   return (
     <div className='recipe-app'>
       <Header showRecipeForm={showRecipeForm} searchTerm={searchTerm} updateSearchTerm={updateSearchTerm} displayAllRecipes={displayAllRecipes} toggleFilters={toggleFilters} />
-      {showFilters && <FilterOptions filterType={filterType} updateFilter={updateFilter} updateFilterValue={updateFilterValue} />}
-      {showNewRecipeForm && <NewRecipeForm newRecipe={newRecipe} hideRecipeForm={hideRecipeForm} onUpdateForm={onUpdateForm} handleNewRecipe={handleNewRecipe} />}
-      {selectedRecipe && <RecipeFull selectedRecipe={selectedRecipe} handleUnselectRecipe={handleUnselectRecipe} onUpdateForm={onUpdateForm} handleUpdateRecipe={handleUpdateRecipe} handleDeleteRecipe={handleDeleteRecipe} handleStar={handleStar} />}
+      {showFilters && <FilterOptions filterType={filterType} updateFilter={updateFilter} updateFilterValue={updateFilterValue} categoryList={categoryList()} />}
+      {showNewRecipeForm && <NewRecipeForm newRecipe={newRecipe} hideRecipeForm={hideRecipeForm} onUpdateForm={onUpdateForm} handleNewRecipe={handleNewRecipe} categoryList={categoryList()} />}
+      {selectedRecipe && <RecipeFull selectedRecipe={selectedRecipe} handleUnselectRecipe={handleUnselectRecipe} onUpdateForm={onUpdateForm} handleUpdateRecipe={handleUpdateRecipe} handleDeleteRecipe={handleDeleteRecipe} handleStar={handleStar} categoryList={categoryList()} />}
       {!selectedRecipe && !showNewRecipeForm &&
         <div className="recipe-list">
           {displayedRecipes.map(recipe => <RecipeExcerpt key={recipe.id} recipe={recipe} handleSelectRecipe={handleSelectRecipe} handleStar={handleStar} />)}
